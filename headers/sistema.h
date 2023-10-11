@@ -13,7 +13,7 @@ typedef struct {
 // Estrutura de cabeçalho para disciplina do arquivo
 typedef struct {
     int pos_cabeca; // posição do início da lista
-} Cabecalho;
+} Cabecalho_Disciplina;
 
 // Estrutura para Disciplina
 typedef struct {
