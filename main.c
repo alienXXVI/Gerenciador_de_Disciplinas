@@ -72,8 +72,8 @@ void resetar() {
 int main() {
     // Disciplina *d = criar_disciplina(1, "Disciplina1", 10, 1);
     // Curso *c1 = criar_curso(10, "Ciencia da Computacao", 'E');
-    // CadastroProfessor *cp1 = criar_cadastro_professor(1, "Jose de Brito");
     // CadastroProfessorDisciplina *cpd1 = criar_cadastro_professor_disciplina(1, 1, 2023, 100);
+    // CadastroProfessor *cp1 = criar_cadastro_professor(1, "Jose de Brito");
 
     // resetar();
     
@@ -88,8 +88,11 @@ int main() {
 
     // ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
 
-    imprimir_disciplinas(arq_disciplinas);
-    imprimir_cursos(arq_cursos);
+    // imprimir_disciplinas(arq_disciplinas);
+    // imprimir_cursos(arq_cursos);
+    imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
+    imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
+    remover_distribuicao_disciplina(arq_professores_disciplinas, 1, 2022);
     imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
     imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
 

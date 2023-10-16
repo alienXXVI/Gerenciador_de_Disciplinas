@@ -508,8 +508,8 @@ void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq
 // pos deve ser uma posição válida do arquivo
 //Pós-condição: nó escrito no arquivo
 void escrever_cpd(FILE* arq, CadastroProfessorDisciplina *cpd, int pos){
-    fseek(arq, sizeof(Cabecalho) + pos * sizeof(cpd), SEEK_SET);
-    fwrite(cpd, sizeof(cpd), 1, arq);
+    fseek(arq, sizeof(Cabecalho) + pos * sizeof(CadastroProfessorDisciplina), SEEK_SET);
+    fwrite(cpd, sizeof(CadastroProfessorDisciplina), 1, arq);
 }
 
 // Busca por uma distribuição de disciplina dada uma posição
@@ -541,32 +541,21 @@ void remover_distribuicao_disciplina(FILE *arq, int codigo, int ano_letivo) {
             cpd = NULL;
         }
     if(pos_aux != -1) { // encontrou o elemento
-        printf("\nElemento encontrado\n");
         if(pos_ant == pos_aux) { // remoção na cabeça
-            printf("Remove na cabeca\n");
             cab->pos_cabeca = cpd->prox;
-            printf("cab->pos_cabeca: %d\n", cab->pos_cabeca);
         }
         else { // remoção no meio
-            printf("Remove no meio\n");
             CadastroProfessorDisciplina *ant = ler_cpd(arq, pos_ant);
 
-            printf("pos_ant: %d\n", pos_ant);
             ant->prox = cpd->prox;
-            printf("cpd->prox: %d\n", cpd->prox);
             escrever_cpd(arq, ant, pos_ant);
-            printf("ant->prox: %d\n", ant->prox);
             free(ant);
         }
         cpd->prox = cab->pos_livre; // torna o nó removido um nó livre
-        printf("cab->pos_livre: %d\n", cab->pos_livre);
         cab->pos_livre = pos_aux;
-        printf("pos_aux: %d\n", pos_aux);
         escrever_cpd(arq, cpd, pos_aux);
-        imprimir_cabecalho(cab);
         escrever_cabecalho(arq, cab);
         free(cpd);
-        printf("Removido com sucesso\n");
     }
     free(cab);
 }
