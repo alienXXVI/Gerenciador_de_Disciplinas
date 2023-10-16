@@ -126,7 +126,7 @@ void inserir_cadastro_professor(FILE *arq, CadastroProfessor *cp);
 // Insere o nó na lista do arquivo
 // Pré-condição: arquivo deve estar aberto para escrita
 // Pós-condição: arquivo com novo nó
-void inserir_cadastro_professor_disciplina(FILE *arq, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd);
+void inserir_cadastro_professor_disciplina(FILE *arq_professores_disciplinas, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd);
 
 // OK
 // Busca por uma disciplina através do seu código

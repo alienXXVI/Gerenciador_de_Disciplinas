@@ -53,10 +53,6 @@ imprimir lista de disciplinas
 
 imprimir lista de professores
 
-imprimir lista de distribuicao de disciplina, organizadas por curso
-	DISTRIBUIÇÃO DE DISCIPLINAS
-	Matematica
-		
+imprimir lista de distribuicao de disciplina, organizadas por curso		
 
 carregar arquivo de lote: carrega arquivo texto contendo operacoes de inclusao em lote
-

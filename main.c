@@ -82,11 +82,16 @@ int main() {
     FILE *arq_professores = open_arq("professores.bin");
     FILE *arq_professores_disciplinas = open_arq("professores_disciplinas.bin");
 
-    //ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
+    // inserir_disciplina(arq_disciplinas, d);
+    // inserir_curso(arq_cursos, c1);
+    // inserir_cadastro_professor_disciplina(arq_professores_disciplinas, arq_disciplinas, cpd1);
+
+    // ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
+
     imprimir_disciplinas(arq_disciplinas);
     imprimir_cursos(arq_cursos);
-    imprimir_cadastros_professor(arq_professores);
-    imprimir_distribuicao_ordenada(arq_cursos, arq_professores_disciplinas);
+    imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
+    imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
 
     fclose(arq_disciplinas);
     fclose(arq_cursos);

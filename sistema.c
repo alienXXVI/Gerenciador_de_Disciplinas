@@ -174,18 +174,19 @@ void inserir_cadastro_professor(FILE *arq, CadastroProfessor *cp) {
 // Insere o nó na lista do arquivo
 // Pré-condição: arquivo deve estar aberto para escrita
 // Pós-condição: arquivo com novo nó
-void inserir_cadastro_professor_disciplina(FILE *arq, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd) {
-    Cabecalho *cab = ler_cabecalho(arq);
+void inserir_cadastro_professor_disciplina(FILE *arq_professores_disciplinas, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd) {
+    Cabecalho *cab = ler_cabecalho(arq_professores_disciplinas);
+    printf("cpd->coddisciplina: %d\n", cpd->coddisciplina);
     Disciplina *d = buscar_disciplina(arq_disciplinas, cpd->coddisciplina);
 
     cpd->codcurso = d->codcurso;
 
     cpd->prox = cab->pos_cabeca;
     cab->pos_cabeca = cab->pos_topo;
-    fseek(arq, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab->pos_topo, SEEK_SET);
-    fwrite(cpd, sizeof(CadastroProfessorDisciplina), 1, arq);
+    fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab->pos_topo, SEEK_SET);
+    fwrite(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
     cab->pos_topo++;
-    escrever_cabecalho(arq, cab);
+    escrever_cabecalho(arq_professores_disciplinas, cab);
     free(cab);
     free(cpd);
     free(d);
@@ -439,7 +440,7 @@ Curso* ler_curso(FILE* arq, int pos) {
 // // Imprime a lista de distribuição de disciplinas organizada por cursos
 // // Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
 // // Pós-condição: nenhuma
-void imprimir_distribuicao_ordenada(FILE *arq_cursos, FILE *arq_professores_disciplinas) {
+void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos) {
     Curso *c = (Curso*) malloc(sizeof(Curso));
     CadastroProfessorDisciplina *cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
 
