@@ -1,6 +1,5 @@
 #ifndef SISTEMA
 #define SISTEMA
-
 #include <stdio.h>
 
 // Estrutura de cabeçalho do arquivo
@@ -38,6 +37,7 @@ typedef struct {
 typedef struct {
     int codigo;
     int coddisciplina;
+    int codcurso; // variável auxiliar para facilitar consulta
     int anoletivo;
     int codprofessor;
     int prox;
@@ -45,6 +45,12 @@ typedef struct {
 
 
 // ---------------------------- ARQUIVO ----------------------------
+
+// OK
+// Verifica se o cabeçalho (a lista) é vazia
+// Entrada: cabeçalho
+// Saída: é vazia (1) ou não é vazia (0)
+int vazia(Cabecalho *cab);
 
 // OK
 // Cria uma lista nova em arquivo, podendo ser de Curso, Disciplina,
@@ -65,14 +71,13 @@ Cabecalho* ler_cabecalho(FILE *arq);
 // Pós-condição: cabeçalho escrito no arquivo
 void escrever_cabecalho(FILE *arq, Cabecalho *cab);
 
+// Abre arquivo
+// Pré-condição: string contendo o nome do arquivo.extensão
+// Pós-condição: retorna arquivo aberto
+FILE* open_arq(char *str);
+
 
 // --------------------------- Sistema ---------------------------
-
-// OK
-// Verifica se o cabeçalho (a lista) é vazia
-// Entrada: cabeçalho
-// Saída: é vazia (1) ou não é vazia (0)
-int vazia(Cabecalho *cab);
 
 // OK
 // Cria uma Disciplina contendo os dados fornecidos
@@ -121,7 +126,7 @@ void inserir_cadastro_professor(FILE *arq, CadastroProfessor *cp);
 // Insere o nó na lista do arquivo
 // Pré-condição: arquivo deve estar aberto para escrita
 // Pós-condição: arquivo com novo nó
-void inserir_cadastro_professor_disciplina(FILE *arq, CadastroProfessorDisciplina *cpd);
+void inserir_cadastro_professor_disciplina(FILE *arq, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd);
 
 // OK
 // Busca por uma disciplina através do seu código
@@ -175,6 +180,27 @@ void imprimir_cadastros_professor_disciplina(FILE *arq);
 // Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
 // Pós-condição: nenhuma
 void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos);
+
+//Escreve um nó em uma determinada posição do arquivo
+//Pré-condição: arquivo deve estar aberto e ser um arquivo de lista
+// pos deve ser uma posição válida do arquivo
+//Pós-condição: nó escrito no arquivo
+void escrever_cpd(FILE* arq, CadastroProfessorDisciplina *cpd, int pos);
+
+// Busca por uma distribuição de disciplina dada uma posição
+// Pré-condição: arquivo de professores_disciplinas aberto para leitura
+// Pós-condição: nó encontrado é retornado, caso não encontre, retorna NULL
+CadastroProfessorDisciplina* ler_cpd(FILE* arq, int pos);
+
+// Remove uma distribuição de disciplina dado seu código e seu ano letivo
+// Pré-condição: arquivo de professores_disciplinas deve estar aberto para escrita
+// Pós-condição: nó removido
+void remover_distribuicao_disciplina(FILE *arq, int codigo, int ano_letivo);
+
+// Gera um novo código para distribuição de disciplina
+// Pré-condição: arquivo de professores_disciplinas aberto para leitura
+// Pós-condição: retorna o novo código
+int gerar_codigo_distribuicao(FILE *arq);
 
 
 #endif

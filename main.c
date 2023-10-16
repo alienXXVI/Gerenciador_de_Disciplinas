@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "sistema.h"
+#include "lotes.h"
 
 void imprimir_curso(Curso *c) {
     if(c == NULL) {
@@ -46,54 +47,51 @@ void imprimir_distribuicao_disciplina(CadastroProfessorDisciplina *cpd) {
     printf("Codigo: %d\n"
             "Codigo da Disciplina: %d\n"
             "Ano Letivo: %d\n"
-            "Codigo do Professor: %d\n\n"
-            , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+            "Codigo do Professor: %d\n"
+            "Codigo do Curso: %d\n\n"
+            , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor, cpd->codcurso);
 }
 
-int main() {
-    Curso *c1 = criar_curso(1, "Ciencia da Computacao", 'E');
-    Curso *c2 = criar_curso(2, "Matematica", 'E');
-    Curso *c3 = criar_curso(3, "Historia", 'H');
-
-    CadastroProfessor *cp1 = criar_cadastro_professor(1, "Jose de Brito");
-    CadastroProfessor *cp2 = criar_cadastro_professor(2, "Maria Silva");
-
-    CadastroProfessorDisciplina *cpd1 = criar_cadastro_professor_disciplina(1, 10, 2023, 1);
-    CadastroProfessorDisciplina *cpd2 = criar_cadastro_professor_disciplina(2, 11, 2022, 2);
-
+void resetar() {
     FILE *arq_disciplinas = fopen("disciplinas.bin", "w+b");
     FILE *arq_cursos = fopen("cursos.bin", "w+b");
     FILE *arq_professores = fopen("professores.bin", "w+b");
     FILE *arq_professores_disciplinas = fopen("professores_disciplinas.bin", "w+b");
 
-
-    criar_cabecalho_vazio(arq_cursos);
-    inserir_curso(arq_cursos, c1);
-    inserir_curso(arq_cursos, c2);
-    inserir_curso(arq_cursos, c3);
-    imprimir_cursos(arq_cursos);
-
-    Disciplina *d = criar_disciplina(1, "Matematica", 1, 1);
-    Disciplina *d2 = criar_disciplina(2, "Ciencia", 4, 1);
-
     criar_cabecalho_vazio(arq_disciplinas);
-    inserir_disciplina(arq_disciplinas, d);
-    inserir_disciplina(arq_disciplinas, d2);
-    imprimir_disciplinas(arq_disciplinas);
+    criar_cabecalho_vazio(arq_cursos);
+    criar_cabecalho_vazio(arq_professores);
+    criar_cabecalho_vazio(arq_professores_disciplinas);
+
     fclose(arq_disciplinas);
     fclose(arq_cursos);
-
-    criar_cabecalho_vazio(arq_professores);
-    inserir_cadastro_professor(arq_professores, cp1);
-    inserir_cadastro_professor(arq_professores, cp2);
-    imprimir_cadastros_professor(arq_professores);
     fclose(arq_professores);
-
-    criar_cabecalho_vazio(arq_professores_disciplinas);
-    inserir_cadastro_professor_disciplina(arq_professores_disciplinas, cpd1);
-    inserir_cadastro_professor_disciplina(arq_professores_disciplinas, cpd2);
-    imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
     fclose(arq_professores_disciplinas);
+}
 
+int main() {
+    // Disciplina *d = criar_disciplina(1, "Disciplina1", 10, 1);
+    // Curso *c1 = criar_curso(10, "Ciencia da Computacao", 'E');
+    // CadastroProfessor *cp1 = criar_cadastro_professor(1, "Jose de Brito");
+    // CadastroProfessorDisciplina *cpd1 = criar_cadastro_professor_disciplina(1, 1, 2023, 100);
+
+    // resetar();
+    
+    FILE *arq_disciplinas = open_arq("disciplinas.bin");
+    FILE *arq_cursos = open_arq("cursos.bin");
+    FILE *arq_professores = open_arq("professores.bin");
+    FILE *arq_professores_disciplinas = open_arq("professores_disciplinas.bin");
+
+    //ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
+    imprimir_disciplinas(arq_disciplinas);
+    imprimir_cursos(arq_cursos);
+    imprimir_cadastros_professor(arq_professores);
+    imprimir_distribuicao_ordenada(arq_cursos, arq_professores_disciplinas);
+
+    fclose(arq_disciplinas);
+    fclose(arq_cursos);
+    fclose(arq_professores);
+    fclose(arq_professores_disciplinas);
+    
     return 0;
 }

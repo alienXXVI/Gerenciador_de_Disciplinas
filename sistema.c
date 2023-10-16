@@ -1,8 +1,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sistema.h"
+#include "lotes.h"
 
 // ------------------------------- Arquivo -------------------------------
+
+// Verifica se o cabeçalho (a lista) é vazia
+// Entrada: cabeçalho
+// Saída: é vazia (1) ou não é vazia (0)
+int vazia(Cabecalho *cab) {
+    return cab->pos_cabeca == -1;
+}
 
 // Cria uma lista (cabeçalho) nova em arquivo, podendo ser de Curso, Disciplina,
 // CadastroProfessor ou CadastroProfessorDisciplina
@@ -37,15 +45,33 @@ void escrever_cabecalho(FILE *arq, Cabecalho *cab){
     fwrite(cab, sizeof(Cabecalho), 1, arq);
 }
 
+void imprimir_cabecalho(Cabecalho *cab) {
+    printf("---- CABECALHO ----\n");
+    printf("Cabeca: %d\n"
+            "Topo: %d\n"
+            "Livre: %d\n",
+        cab->pos_cabeca, cab->pos_topo, cab->pos_livre);
+}
+
+// Abre arquivo
+// Pré-condição: string contendo o nome do arquivo.extensão
+// Pós-condição: retorna arquivo aberto
+FILE* open_arq(char* str){
+    FILE* arq = fopen(str, "r+b");
+
+    if(arq == NULL){
+        arq = fopen(str, "w+b");
+        Cabecalho* cab = (Cabecalho*) malloc(sizeof(Cabecalho));
+        cab->pos_cabeca = -1;
+        cab->pos_livre = -1;
+        cab->pos_topo = 0;
+        escrever_cabecalho(arq, cab);
+        free(cab);
+    }
+    return arq;
+}
 
 // --------------------------- Sistema ---------------------------
-
-// Verifica se o cabeçalho (a lista) é vazia
-// Entrada: cabeçalho
-// Saída: é vazia (1) ou não é vazia (0)
-int vazia(Cabecalho *cab) {
-    return cab->pos_cabeca == -1;
-}
 
 // Cria uma Disciplina contendo os dados fornecidos
 // Pré-condição: o código fornecido deve ser diferente para o mesmo curso
@@ -148,8 +174,11 @@ void inserir_cadastro_professor(FILE *arq, CadastroProfessor *cp) {
 // Insere o nó na lista do arquivo
 // Pré-condição: arquivo deve estar aberto para escrita
 // Pós-condição: arquivo com novo nó
-void inserir_cadastro_professor_disciplina(FILE *arq, CadastroProfessorDisciplina *cpd) {
+void inserir_cadastro_professor_disciplina(FILE *arq, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd) {
     Cabecalho *cab = ler_cabecalho(arq);
+    Disciplina *d = buscar_disciplina(arq_disciplinas, cpd->coddisciplina);
+
+    cpd->codcurso = d->codcurso;
 
     cpd->prox = cab->pos_cabeca;
     cab->pos_cabeca = cab->pos_topo;
@@ -159,6 +188,7 @@ void inserir_cadastro_professor_disciplina(FILE *arq, CadastroProfessorDisciplin
     escrever_cabecalho(arq, cab);
     free(cab);
     free(cpd);
+    free(d);
 }
 
 // Busca por uma disciplina através do seu código
@@ -395,21 +425,177 @@ void imprimir_cadastros_professor_disciplina(FILE *arq) {
     free(cpd);
 }
 
-// Imprime a lista de distribuição de disciplinas organizada por cursos
-// Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
-// Pós-condição: nenhuma
-void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos) {
-    CadastroProfessorDisciplina *cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
+// Busca por uma distribuição de disciplina dada uma posição
+// Pré-condição: arquivo de professores_disciplinas aberto para leitura
+// Pós-condição: nó encontrado é retornado, caso não encontre, retorna NULL
+Curso* ler_curso(FILE* arq, int pos) {
+    Curso* curso = (Curso*) malloc(sizeof(Curso));
+
+    fseek(arq, sizeof(Cabecalho) + pos * sizeof(Curso), SEEK_SET);
+    fread(curso ,sizeof(Curso), 1, arq);
+    return curso;
+}
+
+// // Imprime a lista de distribuição de disciplinas organizada por cursos
+// // Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
+// // Pós-condição: nenhuma
+void imprimir_distribuicao_ordenada(FILE *arq_cursos, FILE *arq_professores_disciplinas) {
     Curso *c = (Curso*) malloc(sizeof(Curso));
-    Cabecalho *cab_curso = ler_cabecalho(arq_cursos);
+    CadastroProfessorDisciplina *cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
+
+    Cabecalho *cab_c = ler_cabecalho(arq_cursos);
     Cabecalho *cab_cpd = ler_cabecalho(arq_professores_disciplinas);
 
-    if(!vazia(cab_curso)) {
-        fseek(arq_cursos, sizeof(Cabecalho) + sizeof(Curso) * cab_curso->pos_cabeca, SEEK_SET);
-        fread(c, sizeof(Curso), 1, arq_cursos);
-        while(c->prox != -1) {
-            // ver chatpg
+    printf("\n--- DISTRIBUICAO DE DISCIPLINAS ORDENADA ---\n");
+
+    fseek(arq_cursos, sizeof(Cabecalho) + sizeof(Curso) * cab_c->pos_cabeca, SEEK_SET);
+    fread(c, sizeof(Curso), 1, arq_cursos);
+
+    while(c->prox != -1) {
+        printf("\n-> %s <-\n", c->nome);
+
+        fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab_cpd->pos_cabeca, SEEK_SET);
+        fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
+        
+        while(cpd->prox != -1) {
+            if(c->codigo == cpd->codcurso) {
+                printf("Codigo: %d\n"
+                        "Codigo da Disciplina: %d\n"
+                        "Ano Letivo: %d\n"
+                        "Codigo do Professor: %d\n"
+                        "-----------------------------------\n"
+                        , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+            }
+            fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cpd->prox, SEEK_SET);
+            fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
         }
+        fseek(arq_cursos, sizeof(Cabecalho) + sizeof(Curso) * c->prox, SEEK_SET);
+        fread(c, sizeof(Curso), 1, arq_cursos);
+    }
+    printf("\n-> %s <-\n", c->nome);
+
+    fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab_cpd->pos_cabeca, SEEK_SET);
+    fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
+        
+    while(cpd->prox != -1) {
+        if(c->codigo == cpd->codcurso) {
+            printf("Codigo: %d\n"
+                    "Codigo da Disciplina: %d\n"
+                    "Ano Letivo: %d\n"
+                    "Codigo do Professor: %d\n"
+                    "-----------------------------------\n"
+                    , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+        }
+        fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cpd->prox, SEEK_SET);
+        fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
+    }
+    printf("Codigo: %d\n"
+            "Codigo da Disciplina: %d\n"
+            "Ano Letivo: %d\n"
+            "Codigo do Professor: %d\n"
+            "-----------------------------------\n"
+            , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+
+    free(c);
+    free(cpd);
+    free(cab_c);
+    free(cab_cpd);
+}
+
+//Escreve um nó em uma determinada posição do arquivo
+//Pré-condição: arquivo deve estar aberto e ser um arquivo de lista
+// pos deve ser uma posição válida do arquivo
+//Pós-condição: nó escrito no arquivo
+void escrever_cpd(FILE* arq, CadastroProfessorDisciplina *cpd, int pos){
+    fseek(arq, sizeof(Cabecalho) + pos * sizeof(cpd), SEEK_SET);
+    fwrite(cpd, sizeof(cpd), 1, arq);
+}
+
+// Busca por uma distribuição de disciplina dada uma posição
+// Pré-condição: arquivo de professores_disciplinas aberto para leitura
+// Pós-condição: nó encontrado é retornado, caso não encontre, retorna NULL
+CadastroProfessorDisciplina* ler_cpd(FILE* arq, int pos) {
+    CadastroProfessorDisciplina* cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
+
+    fseek(arq, sizeof(Cabecalho) + pos * sizeof(CadastroProfessorDisciplina), SEEK_SET);
+    fread(cpd ,sizeof(CadastroProfessorDisciplina), 1, arq);
+    return cpd;
+}
+
+// Remove uma distribuição de disciplina dado seu código e seu ano letivo
+// Pré-condição: arquivo de professores_disciplinas deve estar aberto para escrita
+// Pós-condição: nó removido
+void remover_distribuicao_disciplina(FILE *arq, int codigo, int ano_letivo) {
+    Cabecalho *cab = ler_cabecalho(arq);
+    CadastroProfessorDisciplina *cpd = NULL;
+    int pos_aux = cab->pos_cabeca;
+    int pos_ant = cab->pos_cabeca;
+
+    while(pos_aux != -1 &&
+          ((cpd = ler_cpd(arq, pos_aux)) != NULL) &&
+          cpd->codigo != codigo) {
+            pos_ant = pos_aux;
+            pos_aux = cpd->prox;
+            free(cpd);
+            cpd = NULL;
+        }
+    if(pos_aux != -1) { // encontrou o elemento
+        printf("\nElemento encontrado\n");
+        if(pos_ant == pos_aux) { // remoção na cabeça
+            printf("Remove na cabeca\n");
+            cab->pos_cabeca = cpd->prox;
+            printf("cab->pos_cabeca: %d\n", cab->pos_cabeca);
+        }
+        else { // remoção no meio
+            printf("Remove no meio\n");
+            CadastroProfessorDisciplina *ant = ler_cpd(arq, pos_ant);
+
+            printf("pos_ant: %d\n", pos_ant);
+            ant->prox = cpd->prox;
+            printf("cpd->prox: %d\n", cpd->prox);
+            escrever_cpd(arq, ant, pos_ant);
+            printf("ant->prox: %d\n", ant->prox);
+            free(ant);
+        }
+        cpd->prox = cab->pos_livre; // torna o nó removido um nó livre
+        printf("cab->pos_livre: %d\n", cab->pos_livre);
+        cab->pos_livre = pos_aux;
+        printf("pos_aux: %d\n", pos_aux);
+        escrever_cpd(arq, cpd, pos_aux);
+        imprimir_cabecalho(cab);
+        escrever_cabecalho(arq, cab);
+        free(cpd);
+        printf("Removido com sucesso\n");
+    }
+    free(cab);
+}
+
+// Gera um novo código para distribuição de disciplina
+// Pré-condição: arquivo de professores_disciplinas aberto para leitura
+// Pós-condição: retorna o novo código
+int gerar_codigo_distribuicao(FILE *arq) {
+        
+    Cabecalho *cab = ler_cabecalho(arq);
+    CadastroProfessorDisciplina *cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
+    int maior;
+
+    if(vazia(cab)) {
+        free(cab);
+        free(cpd);
+        return 0;
     }
     
+    fseek(arq, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab->pos_cabeca, SEEK_SET);
+    fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq);
+    maior = cpd->codigo;
+
+    while(cpd->prox != -1) {
+        fseek(arq, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cpd->prox, SEEK_SET);
+        fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq);
+        if(cpd->codigo > maior)
+            maior = cpd->codigo;
+    }
+    free(cab);
+    free(cpd);
+    return maior+1;
 }
