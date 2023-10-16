@@ -97,7 +97,7 @@ CadastroProfessor* criar_cadastro_professor(int codigo, char *nome);
 // Cria um CadastroProfessorDisciplina contendo os dados fornecidos
 // Pré-condição: os códigos fornecidos devem ser válidos
 // Pós-condição: retorna ponteiro para CadastroProfessorDisciplina
-CadastroProfessorDisciplina* criar_cadastro_professor_disciplina(int coddisciplina, int anoletivo, int codprofessor);
+CadastroProfessorDisciplina* criar_cadastro_professor_disciplina(int codigo, int coddisciplina, int anoletivo, int codprofessor);
 
 // OK
 // Insere o nó na lista do arquivo
@@ -133,7 +133,7 @@ Disciplina* buscar_disciplina(FILE* arq, int codigo);
 // Busca por um curso através do seu código
 // Pré-condição: arquivo deve estar aberto e ser um arquivo de lista
 // Pós-condição: ponteiro para nó lido é retornado
-CadastroProfessor* buscar_curso(FILE* arq, int codigo);
+Curso* buscar_curso(FILE* arq, int codigo);
 
 // OK
 // Busca por um cadastro de professor através do seu código
@@ -165,10 +165,16 @@ void imprimir_cursos(FILE *arq);
 // Pós-condição: nenhuma
 void imprimir_cadastros_professor(FILE *arq);
 
-// Imprime a lista de cadastros de atribuições de disciplina
+// OK
+// Imprime a lista de cadastros de distribuições de disciplina
 // Pré-condição: arquivo aberto para leitura
 // Pós-condição: nenhuma
 void imprimir_cadastros_professor_disciplina(FILE *arq);
+
+// Imprime a lista de distribuição de disciplinas organizada por cursos
+// Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
+// Pós-condição: nenhuma
+void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos);
 
 
 #endif

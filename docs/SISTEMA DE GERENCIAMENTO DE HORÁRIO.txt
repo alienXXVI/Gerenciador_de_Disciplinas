@@ -1,3 +1,8 @@
+comandos:
+	gcc *.c -o ./main.exe
+	./main.exe
+
+
 SISTEMA DE GERENCIAMENTO DE HORÁRIOS DE UMA UNIVERSIDADE
 
 Curso:
@@ -49,6 +54,9 @@ imprimir lista de disciplinas
 imprimir lista de professores
 
 imprimir lista de distribuicao de disciplina, organizadas por curso
+	DISTRIBUIÇÃO DE DISCIPLINAS
+	Matematica
+		
 
 carregar arquivo de lote: carrega arquivo texto contendo operacoes de inclusao em lote
 
