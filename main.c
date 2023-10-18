@@ -88,12 +88,14 @@ int main() {
 
     // ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
 
-    // imprimir_disciplinas(arq_disciplinas);
-    // imprimir_cursos(arq_cursos);
+    imprimir_disciplinas(arq_disciplinas);
+    imprimir_cursos(arq_cursos);
     imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
-    imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
+    // imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
     remover_distribuicao_disciplina(arq_professores_disciplinas, 1, 2022);
-    imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
+    // remover_distribuicao_disciplina(arq_professores_disciplinas, 5, 2022);
+    // remover_distribuicao_disciplina(arq_professores_disciplinas, 0, 2022);
+    // imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
     imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
 
     fclose(arq_disciplinas);

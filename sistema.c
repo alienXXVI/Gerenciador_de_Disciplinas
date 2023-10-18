@@ -437,9 +437,51 @@ Curso* ler_curso(FILE* arq, int pos) {
     return curso;
 }
 
-// // Imprime a lista de distribuição de disciplinas organizada por cursos
-// // Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
-// // Pós-condição: nenhuma
+// Imprime a lista de distribuição de disciplinas organizada por cursos
+// Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
+// Pós-condição: nenhuma
+void imprimir_distribuicao_ordenada2(FILE *arq_professores_disciplinas, FILE *arq_cursos) {
+    Curso c;
+    CadastroProfessorDisciplina cpd;
+
+    Cabecalho *cab_c = ler_cabecalho(arq_cursos);
+    Cabecalho *cab_cpd = ler_cabecalho(arq_professores_disciplinas);
+
+    printf("\n--- DISTRIBUICAO DE DISCIPLINAS ORDENADA ---\n");
+
+    while (1) {
+        if (fread(&c, sizeof(Curso), 1, arq_cursos) != 1) {
+            break; // Não há mais cursos para ler
+        }
+        
+        printf("\n-> %s <-\n", c.nome);
+
+        while (1) {
+            if (fread(&cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas) != 1) {
+                break; // Não há mais registros de professor-disciplina para ler
+            }
+
+            if (c.codigo == cpd.codcurso) {
+                printf("Codigo: %d\n"
+                        "Codigo da Disciplina: %d\n"
+                        "Ano Letivo: %d\n"
+                        "Codigo do Professor: %d\n"
+                        "-----------------------------------\n"
+                        , cpd.codigo, cpd.coddisciplina, cpd.anoletivo, cpd.codprofessor);
+            }
+        }
+
+        fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cab_cpd->pos_cabeca, SEEK_SET);
+    }
+
+    free(cab_c);
+    free(cab_cpd);
+}
+
+
+// Imprime a lista de distribuição de disciplinas organizada por cursos
+// Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
+// Pós-condição: nenhuma
 void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos) {
     Curso *c = (Curso*) malloc(sizeof(Curso));
     CadastroProfessorDisciplina *cpd = (CadastroProfessorDisciplina*) malloc(sizeof(CadastroProfessorDisciplina));
@@ -448,6 +490,14 @@ void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq
     Cabecalho *cab_cpd = ler_cabecalho(arq_professores_disciplinas);
 
     printf("\n--- DISTRIBUICAO DE DISCIPLINAS ORDENADA ---\n");
+    if(vazia(cab_c)) {
+        printf("(Sem cursos)\n");
+        return;
+    }
+    if(vazia(cab_cpd)) {
+        printf("(Vazia)\n");
+        return;
+    }
 
     fseek(arq_cursos, sizeof(Cabecalho) + sizeof(Curso) * cab_c->pos_cabeca, SEEK_SET);
     fread(c, sizeof(Curso), 1, arq_cursos);
@@ -470,6 +520,14 @@ void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq
             fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cpd->prox, SEEK_SET);
             fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
         }
+        if(c->codigo == cpd->codcurso) {
+                printf("Codigo: %d\n"
+                        "Codigo da Disciplina: %d\n"
+                        "Ano Letivo: %d\n"
+                        "Codigo do Professor: %d\n"
+                        "-----------------------------------\n"
+                        , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+        }
         fseek(arq_cursos, sizeof(Cabecalho) + sizeof(Curso) * c->prox, SEEK_SET);
         fread(c, sizeof(Curso), 1, arq_cursos);
     }
@@ -490,12 +548,14 @@ void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq
         fseek(arq_professores_disciplinas, sizeof(Cabecalho) + sizeof(CadastroProfessorDisciplina) * cpd->prox, SEEK_SET);
         fread(cpd, sizeof(CadastroProfessorDisciplina), 1, arq_professores_disciplinas);
     }
-    printf("Codigo: %d\n"
-            "Codigo da Disciplina: %d\n"
-            "Ano Letivo: %d\n"
-            "Codigo do Professor: %d\n"
-            "-----------------------------------\n"
-            , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+    if(c->codigo == cpd->codcurso) {
+                printf("Codigo: %d\n"
+                        "Codigo da Disciplina: %d\n"
+                        "Ano Letivo: %d\n"
+                        "Codigo do Professor: %d\n"
+                        "-----------------------------------\n"
+                        , cpd->codigo, cpd->coddisciplina, cpd->anoletivo, cpd->codprofessor);
+    }
 
     free(c);
     free(cpd);

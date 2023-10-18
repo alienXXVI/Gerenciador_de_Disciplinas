@@ -1,3 +1,1 @@
-C;11;Ciencia da Computacao;E
-D;5;Algoritmos e Estrutura de Dados;11;2
-M;5;2023;7
+M;5;2023;9

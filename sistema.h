@@ -179,6 +179,11 @@ void imprimir_cadastros_professor_disciplina(FILE *arq);
 // Imprime a lista de distribuição de disciplinas organizada por cursos
 // Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
 // Pós-condição: nenhuma
+void imprimir_distribuicao_ordenada2(FILE *arq_professores_disciplinas, FILE *arq_cursos);
+
+// Imprime a lista de distribuição de disciplinas organizada por cursos
+// Pré-condição: arquivos de distribuição de disciplinas e de cursos abertos para leitura
+// Pós-condição: nenhuma
 void imprimir_distribuicao_ordenada(FILE *arq_professores_disciplinas, FILE *arq_cursos);
 
 //Escreve um nó em uma determinada posição do arquivo
