@@ -176,7 +176,6 @@ void inserir_cadastro_professor(FILE *arq, CadastroProfessor *cp) {
 // Pós-condição: arquivo com novo nó
 void inserir_cadastro_professor_disciplina(FILE *arq_professores_disciplinas, FILE *arq_disciplinas, CadastroProfessorDisciplina *cpd) {
     Cabecalho *cab = ler_cabecalho(arq_professores_disciplinas);
-    printf("cpd->coddisciplina: %d\n", cpd->coddisciplina);
     Disciplina *d = buscar_disciplina(arq_disciplinas, cpd->coddisciplina);
 
     cpd->codcurso = d->codcurso;

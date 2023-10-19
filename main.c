@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "sistema.h"
 #include "lotes.h"
+#include "menu.h"
 
 void imprimir_curso(Curso *c) {
     if(c == NULL) {
@@ -70,38 +71,18 @@ void resetar() {
 }
 
 int main() {
-    // Disciplina *d = criar_disciplina(1, "Disciplina1", 10, 1);
-    // Curso *c1 = criar_curso(10, "Ciencia da Computacao", 'E');
-    // CadastroProfessorDisciplina *cpd1 = criar_cadastro_professor_disciplina(1, 1, 2023, 100);
-    // CadastroProfessor *cp1 = criar_cadastro_professor(1, "Jose de Brito");
-
-    // resetar();
-    
-    FILE *arq_disciplinas = open_arq("disciplinas.bin");
     FILE *arq_cursos = open_arq("cursos.bin");
+    FILE *arq_disciplinas = open_arq("disciplinas.bin");
     FILE *arq_professores = open_arq("professores.bin");
     FILE *arq_professores_disciplinas = open_arq("professores_disciplinas.bin");
 
-    // inserir_disciplina(arq_disciplinas, d);
-    // inserir_curso(arq_cursos, c1);
-    // inserir_cadastro_professor_disciplina(arq_professores_disciplinas, arq_disciplinas, cpd1);
-
-    // ler_arq_txt("lotes.txt", arq_disciplinas, arq_cursos, arq_professores, arq_professores_disciplinas);
-
-    imprimir_disciplinas(arq_disciplinas);
-    imprimir_cursos(arq_cursos);
-    imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
-    // imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
-    remover_distribuicao_disciplina(arq_professores_disciplinas, 1, 2022);
-    // remover_distribuicao_disciplina(arq_professores_disciplinas, 5, 2022);
-    // remover_distribuicao_disciplina(arq_professores_disciplinas, 0, 2022);
-    // imprimir_cadastros_professor_disciplina(arq_professores_disciplinas);
-    imprimir_distribuicao_ordenada(arq_professores_disciplinas, arq_cursos);
-
-    fclose(arq_disciplinas);
+    menu_principal(arq_cursos, arq_disciplinas, arq_professores, arq_professores_disciplinas);
     fclose(arq_cursos);
+    fclose(arq_disciplinas);
     fclose(arq_professores);
     fclose(arq_professores_disciplinas);
+
+    // resetar();
     
     return 0;
 }
